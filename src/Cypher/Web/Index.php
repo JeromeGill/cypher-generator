@@ -15,8 +15,8 @@ class Index extends BaseController
     public function post()
     {
         $index = $this->parseJSONSerialisedForm();
-        $cyphers = new Cyphers();
-        $encryption = $cyphers->getCypher($index);
-        $this->sendResponse(implode(', ', $encryption));
+        $cyphers = new Cyphers($this->getDB());
+        $encryption = $cyphers->getCypher($index['index']);
+        $this->sendResponse($encryption['cypher']);
     }
 }

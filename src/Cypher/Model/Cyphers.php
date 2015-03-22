@@ -2,46 +2,26 @@
 
 namespace Cypher\Cypher\Model;
 
-class Cyphers {
+use Cypher\Base\Model\BaseModel;
+use DB\SQL;
 
-    protected $cypher = [];
+class Cyphers extends BaseModel{
 
-    public function __construct()
+
+    public function __construct(SQL $db)
     {
-        $values = [];
-
-        //Make an array of the values 1-40
-
-        for ($i = 0; $i < 40; $i++) {
-            $values[] = $i;
-        }
-
-        //For 26 values
-        for ($i = 0; $i < 26; $i++) {
-            //Pick a random index
-            $index = rand(0, sizeof($values) - 1);
-
-            //Assign the index of the remaining value array to the cypher
-            $this->cypher[] = $values[$index];
-
-            //Remove the indexed value from the value array
-            unset($values[$index]);
-
-            //re-index the remaining values
-            $newValues = [];
-
-            foreach($values as $v){
-                $newValues[] = $v;
-            }
-
-            $values = $newValues;
-        }
+        parent::__construct($db,'cypher_lookup');
     }
 
 
     public function getCypher($index)
     {
-        return $this->cypher;
+        $cypher = $this->db->exec('SELECT cypher FROM cypher_lookup WHERE cypher_lookup.id = ?', $index);
+        return array_pop($cypher);
     }
 
+    public function addCypher(array $cypher)
+    {
+        $this->db->exec('INSERT INTO cypher_lookup(cypher) VALUES(?)',implode(',',$cypher));
+    }
 }
